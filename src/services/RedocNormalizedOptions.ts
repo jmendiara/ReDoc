@@ -2,8 +2,8 @@ import defaultTheme, { ResolvedThemeInterface, resolveTheme, ThemeInterface } fr
 import { querySelector } from '../utils/dom';
 import { isNumeric, mergeObjects } from '../utils/helpers';
 
-import { LabelsConfigRaw, setRedocLabels } from './Labels';
 import { ExtensionComponentMeta } from '../components/Fields/Extensions';
+import { LabelsConfigRaw, setRedocLabels } from './Labels';
 import { MDXComponentMeta } from './MarkdownRenderer';
 
 export interface RedocRawOptions {
