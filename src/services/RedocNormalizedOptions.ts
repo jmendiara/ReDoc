@@ -3,6 +3,7 @@ import { querySelector } from '../utils/dom';
 import { isNumeric, mergeObjects } from '../utils/helpers';
 
 import { LabelsConfigRaw, setRedocLabels } from './Labels';
+import { ExtensionComponentMeta } from '../components/Fields/Extensions';
 import { MDXComponentMeta } from './MarkdownRenderer';
 
 export interface RedocRawOptions {
@@ -22,6 +23,7 @@ export interface RedocRawOptions {
   onlyRequiredInSamples?: boolean | string;
   showExtensions?: boolean | string | string[];
   hideSingleRequestSampleTab?: boolean | string;
+  extensionsComponents?: Dict<ExtensionComponentMeta>;
 
   unstable_ignoreMimeParameters?: boolean;
 
@@ -125,6 +127,7 @@ export class RedocNormalizedOptions {
   onlyRequiredInSamples: boolean;
   showExtensions: boolean | string[];
   hideSingleRequestSampleTab: boolean;
+  extensionsComponents: Dict<ExtensionComponentMeta>;
 
   /* tslint:disable-next-line */
   unstable_ignoreMimeParameters: boolean;
@@ -160,5 +163,6 @@ export class RedocNormalizedOptions {
     this.unstable_ignoreMimeParameters = argValueToBoolean(raw.unstable_ignoreMimeParameters);
 
     this.allowedMdComponents = raw.allowedMdComponents || {};
+    this.extensionsComponents = raw.extensionsComponents || {};
   }
 }
