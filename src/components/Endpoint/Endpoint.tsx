@@ -60,21 +60,23 @@ export class Endpoint extends React.Component<EndpointProps, EndpointState> {
               />
             </EndpointInfo>
             <ServersOverlay expanded={expanded}>
-              {operation.servers.map(server => (
-                <ServerItem key={server.url}>
-                  <Markdown source={server.description || ''} compact={true} />
-                  <SelectOnClick>
-                    <ServerUrl>
-                      <span>
-                        {hideHostname || options.hideHostname
-                          ? getBasePath(server.url)
-                          : server.url}
-                      </span>
-                      {operation.path}
-                    </ServerUrl>
-                  </SelectOnClick>
-                </ServerItem>
-              ))}
+              {operation.servers.map(server => {
+                return (
+                  <ServerItem key={server.url}>
+                    <Markdown source={server.description || ''} compact={true} />
+                    <SelectOnClick>
+                      <ServerUrl>
+                        <span>
+                          {hideHostname || options.hideHostname
+                            ? getBasePath(server.url)
+                            : server.url}
+                        </span>
+                        {operation.path}
+                      </ServerUrl>
+                    </SelectOnClick>
+                  </ServerItem>
+                );
+              })}
             </ServersOverlay>
           </OperationEndpointWrap>
         )}
