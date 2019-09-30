@@ -138,7 +138,7 @@ For npm:
 
 Install peer dependencies required by ReDoc if you don't have them installed already:
 
-    npm i react react-dom mobx@^4.2.0 styled-components
+    npm i react react-dom mobx@^4.2.0 styled-components core-js
 
 Import `RedocStandalone` component from 'redoc' module:
 
@@ -218,6 +218,7 @@ ReDoc makes use of the following [vendor extensions](https://swagger.io/specific
 * [`x-tagGroups`](docs/redoc-vendor-extensions.md#x-tagGroups) - group tags by categories in the side menu
 * [`x-servers`](docs/redoc-vendor-extensions.md#x-servers) - ability to specify different servers for API (backported from OpenAPI 3.0)
 * [`x-ignoredHeaderParameters`](docs/redoc-vendor-extensions.md#x-ignoredHeaderParameters) - ability to specify header parameter names to ignore
+* [`x-additionalPropertiesName`](docs/redoc-vendor-extensions.md#x-additionalPropertiesName) - ability to supply a descriptive name for the additional property keys
 
 ### `<redoc>` options object
 You can use all of the following options with standalone version on <redoc> tag by kebab-casing them, e.g. `scrollYOffset` becomes `scroll-y-offset` and `expandResponses` becomes `expand-responses`.
@@ -242,6 +243,8 @@ You can use all of the following options with standalone version on <redoc> tag 
 * `hideDownloadButton` - do not show "Download" spec button. **THIS DOESN'T MAKE YOUR SPEC PRIVATE**, it just hides the button.
 * `disableSearch` - disable search indexing and search box
 * `onlyRequiredInSamples` - shows only required fields in request samples.
+* `jsonSampleExpandLevel` - set the default expand level for JSON payload samples (responses and request body). Special value 'all' expands all levels. The default value is `2`.
+* `menuToggle` - if true clicking second time on expanded menu item will collapse it, default `false`
 * `theme` - ReDoc theme. Not documented yet. For details check source code: [theme.ts](https://github.com/Redocly/redoc/blob/master/src/theme.ts)
 
 ## Advanced usage of standalone version

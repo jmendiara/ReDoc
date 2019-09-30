@@ -1,3 +1,83 @@
+# [2.0.0-rc.14](https://github.com/Redocly/redoc/compare/v2.0.0-rc.13...v2.0.0-rc.14) (2019-08-07)
+
+
+### Bug Fixes
+
+* fix escaping JSON string values ([58cb20d](https://github.com/Redocly/redoc/commit/58cb20d)), closes [#999](https://github.com/Redocly/redoc/issues/999)
+* revert expanding default server variables ([7849f7f](https://github.com/Redocly/redoc/commit/7849f7f))
+
+
+
+# [2.0.0-rc.13](https://github.com/Redocly/redoc/compare/v2.0.0-rc.12...v2.0.0-rc.13) (2019-08-01)
+
+
+### Bug Fixes
+
+* enum list doesn't wrap ([bfbb0c1](https://github.com/Redocly/redoc/commit/bfbb0c1)), closes [#993](https://github.com/Redocly/redoc/issues/993)
+* incorrect serialization of some parameter samples ([aba45db](https://github.com/Redocly/redoc/commit/aba45db)), closes [#992](https://github.com/Redocly/redoc/issues/992)
+* support json serialization for parameter examples ([1367380](https://github.com/Redocly/redoc/commit/1367380)), closes [#934](https://github.com/Redocly/redoc/issues/934)
+* unify accordion icons for responses section ([2afc2e4](https://github.com/Redocly/redoc/commit/2afc2e4)), closes [#975](https://github.com/Redocly/redoc/issues/975)
+* update to core.js 3 ([9e3375d](https://github.com/Redocly/redoc/commit/9e3375d)), closes [#997](https://github.com/Redocly/redoc/issues/997)
+
+
+
+# [2.0.0-rc.12](https://github.com/Redocly/redoc/compare/v2.0.0-rc.11...v2.0.0-rc.12) (2019-07-30)
+
+
+### Bug Fixes
+
+* rename ObjectDescription to SchemaDefinition as discussed ([4496622](https://github.com/Redocly/redoc/commit/4496622))
+
+
+
+# [2.0.0-rc.11](https://github.com/Redocly/redoc/compare/v2.0.0-rc.10...v2.0.0-rc.11) (2019-07-30)
+
+
+### Bug Fixes
+
+* do not add extra slashes to pattern ([70d1ee9](https://github.com/Redocly/redoc/commit/70d1ee9)), closes [#983](https://github.com/Redocly/redoc/issues/983)
+* dropdown fixes related to object description ([0504ad4](https://github.com/Redocly/redoc/commit/0504ad4))
+* incorrect serialization of parameter sample with hypen ([f7dd658](https://github.com/Redocly/redoc/commit/f7dd658))
+* redoc-cli: Add missing content type header on compressed responses of `/` path
+
+
+### Features
+
+* menu items from tags + md extension for Schema Definition ([#681](https://github.com/Redocly/redoc/pull/681))
+* new option `menuToggle` - fold active MenuItem if clicked ([#963](https://github.com/Redocly/redoc/issues/963))
+* Add option for skipping quotes in enums `enumSkipQuotes` ([#968](https://github.com/Redocly/redoc/issues/968)) ([afc7e36](https://github.com/Redocly/redoc/commit/afc7e36))
+* add `sampleCollapseLevel` option ([#937](https://github.com/Redocly/redoc/issues/937)) ([d3f1c16](https://github.com/Redocly/redoc/commit/d3f1c16))
+
+# [2.0.0-rc.10](https://github.com/Redocly/redoc/compare/v2.0.0-rc.9...v2.0.0-rc.10) (2019-07-08)
+
+
+### Bug Fixes
+
+* broken headings with single quote ([51d3b9b](https://github.com/Redocly/redoc/commit/51d3b9b)), closes [#955](https://github.com/Redocly/redoc/issues/955)
+* fix fields table overflow if deeply nested with long title ([12b7057](https://github.com/Redocly/redoc/commit/12b7057))
+* hide empty example when it is not defined ([4bd499f](https://github.com/Redocly/redoc/commit/4bd499f))
+* markdown in examples descriptions + minor ui tweaks ([f52d9e8](https://github.com/Redocly/redoc/commit/f52d9e8))
+* organize response examples in dropdown and display description ([995e557](https://github.com/Redocly/redoc/commit/995e557))
+
+
+
+# [2.0.0-rc.9](https://github.com/Redocly/redoc/compare/v2.0.0-rc.8-1...v2.0.0-rc.9) (2019-06-27)
+
+
+### Bug Fixes
+
+* fix regression double slashes added to full URL display ([f29a4fe](https://github.com/Redocly/redoc/commit/f29a4fe))
+* IE11, add missing Object.assign polyfill ([888f04e](https://github.com/Redocly/redoc/commit/888f04e))
+* serialize parameter example values according to the spec ([#917](https://github.com/Redocly/redoc/issues/917)) ([3939286](https://github.com/Redocly/redoc/commit/3939286))
+* styled-component style error in tabs ([#946](https://github.com/Redocly/redoc/issues/946)) ([c488bbf](https://github.com/Redocly/redoc/commit/c488bbf))
+
+
+### Features
+
+* add x-additionalPropertiesName ([#622](https://github.com/Redocly/redoc/issues/622)) ([#944](https://github.com/Redocly/redoc/issues/944)) ([0eb1e66](https://github.com/Redocly/redoc/commit/0eb1e66))
+
+
+
 # [2.0.0-rc.8-1](https://github.com/Rebilly/ReDoc/compare/v2.0.0-rc.8...v2.0.0-rc.8-1) (2019-05-13)
 
 

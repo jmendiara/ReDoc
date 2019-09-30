@@ -25,6 +25,7 @@ interface Options {
   cdn?: boolean;
   output?: string;
   title?: string;
+  disableGoogleFont?: boolean;
   port?: number;
   templateFileName?: string;
   templateOptions?: any;
@@ -99,6 +100,12 @@ YargsParser.command(
         default: 'ReDoc documentation',
       });
 
+      yargs.options('disableGoogleFont', {
+        describe: 'Disable Google Font',
+        type: 'boolean',
+        default: false,
+      });
+
       yargs.option('cdn', {
         describe: 'Do not include ReDoc source code into html page, use link to CDN instead',
         type: 'boolean',
@@ -114,6 +121,7 @@ YargsParser.command(
         output: argv.o as string,
         cdn: argv.cdn as boolean,
         title: argv.title as string,
+        disableGoogleFont: argv.disableGoogleFont as boolean,
         templateFileName: argv.template as string,
         templateOptions: argv.templateOptions || {},
         redocOptions: argv.options || {},
@@ -156,7 +164,9 @@ async function serve(port: number, pathToSpec: string, options: Options = {}) {
         },
       );
     } else if (request.url === '/') {
-      respondWithGzip(pageHTML, request, response);
+      respondWithGzip(pageHTML, request, response, {
+        'Content-Type': 'text/html',
+      });
     } else if (request.url === '/spec.json') {
       const specStr = JSON.stringify(spec, null, 2);
       respondWithGzip(specStr, request, response, {
@@ -216,7 +226,15 @@ async function bundle(pathToSpec, options: Options = {}) {
 async function getPageHTML(
   spec: any,
   pathToSpec: string,
-  { ssr, cdn, title, templateFileName, templateOptions, redocOptions = {} }: Options,
+  {
+    ssr,
+    cdn,
+    title,
+    disableGoogleFont,
+    templateFileName,
+    templateOptions,
+    redocOptions = {},
+  }: Options,
 ) {
   let html;
   let css;
@@ -259,6 +277,7 @@ async function getPageHTML(
           : `<script>${redocStandaloneSrc}</script>`) + css
       : '<script src="redoc.standalone.js"></script>',
     title,
+    disableGoogleFont,
     templateOptions,
   });
 }
