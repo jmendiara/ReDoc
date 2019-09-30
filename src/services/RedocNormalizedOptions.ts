@@ -32,7 +32,10 @@ export interface RedocRawOptions {
   allowedMdComponents?: Dict<MDXComponentMeta>;
 
   labels?: LabelsConfigRaw;
+
   enumSkipQuotes?: boolean | string;
+
+  expandDefaultServerVariables?: boolean;
 }
 
 function argValueToBoolean(val?: string | boolean): boolean {
@@ -149,6 +152,8 @@ export class RedocNormalizedOptions {
   unstable_ignoreMimeParameters: boolean;
   allowedMdComponents: Dict<MDXComponentMeta>;
 
+  expandDefaultServerVariables: boolean;
+
   constructor(raw: RedocRawOptions, defaults: RedocRawOptions = {}) {
     raw = { ...defaults, ...raw };
     const hook = raw.theme && raw.theme.extensionsHook;
@@ -184,6 +189,8 @@ export class RedocNormalizedOptions {
     this.unstable_ignoreMimeParameters = argValueToBoolean(raw.unstable_ignoreMimeParameters);
 
     this.allowedMdComponents = raw.allowedMdComponents || {};
+
+    this.expandDefaultServerVariables = argValueToBoolean(raw.expandDefaultServerVariables);
     this.extensionsComponents = raw.extensionsComponents || {};
   }
 }
