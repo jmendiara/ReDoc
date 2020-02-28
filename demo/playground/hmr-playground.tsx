@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { render } from 'react-dom';
-// tslint:disable-next-line
 import { AppContainer } from 'react-hot-loader';
 // import DevTools from 'mobx-react-devtools';
 

@@ -14,14 +14,7 @@ import * as zlib from 'zlib';
 import { createStore, loadAndBundleSpec, Redoc } from 'redoc';
 
 import { watch } from 'chokidar';
-import {
-  createReadStream,
-  existsSync,
-  lstatSync,
-  readFileSync,
-  ReadStream,
-  writeFileSync,
-} from 'fs';
+import { createReadStream, existsSync, readFileSync, ReadStream, writeFileSync } from 'fs';
 import * as mkdirp from 'mkdirp';
 
 import * as YargsParser from 'yargs';
@@ -76,10 +69,8 @@ YargsParser.command(
       watch: argv.watch as boolean,
       templateFileName: argv.template as string,
       templateOptions: argv.templateOptions || {},
-      redocOptions: getObjectOrJSON(argv.options),
+      redocOptions: argv.options || {},
     };
-
-    console.log(config);
 
     try {
       await serve(argv.port as number, argv.spec as string, config);
@@ -106,6 +97,7 @@ YargsParser.command(
       yargs.options('title', {
         describe: 'Page Title',
         type: 'string',
+        default: 'ReDoc documentation',
       });
 
       yargs.options('disableGoogleFont', {
@@ -132,7 +124,7 @@ YargsParser.command(
         disableGoogleFont: argv.disableGoogleFont as boolean,
         templateFileName: argv.template as string,
         templateOptions: argv.templateOptions || {},
-        redocOptions: getObjectOrJSON(argv.options),
+        redocOptions: argv.options || {},
       };
 
       try {
@@ -203,7 +195,7 @@ async function serve(port: number, pathToSpec: string, options: Options = {}) {
     const watcher = watch(pathToSpecDirectory, watchOptions);
     const log = console.log.bind(console);
 
-    const handlePath = async _path => {
+    const handlePath = async path => {
       try {
         spec = await loadAndBundleSpec(pathToSpec);
         pageHTML = await getPageHTML(spec, pathToSpec, options);
@@ -297,7 +289,7 @@ async function getPageHTML(
           ? '<script src="https://unpkg.com/redoc@next/bundles/redoc.standalone.js"></script>'
           : `<script>${redocStandaloneSrc}</script>`) + css
       : '<script src="redoc.standalone.js"></script>',
-    title: title || spec.info.title || 'ReDoc documentation',
+    title,
     disableGoogleFont,
     templateOptions,
   });
@@ -360,26 +352,4 @@ function escapeUnicode(str) {
 function handleError(error: Error) {
   console.error(error.stack);
   process.exit(1);
-}
-
-function getObjectOrJSON(options) {
-  switch (typeof options) {
-    case 'object':
-      return options;
-    case 'string':
-      try {
-        if (existsSync(options) && lstatSync(options).isFile()) {
-          return JSON.parse(readFileSync(options, 'utf-8'));
-        } else {
-          return JSON.parse(options);
-        }
-      } catch (e) {
-        console.log(
-          `Encountered error:\n\n${options}\n\nis neither a file with a valid JSON object neither a stringified JSON object.`,
-        );
-        handleError(e);
-      }
-    default:
-      return {};
-  }
 }

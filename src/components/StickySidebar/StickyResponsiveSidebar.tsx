@@ -33,7 +33,7 @@ const StyledStickySidebar = styled.div<{ open?: boolean }>`
   flex-direction: column;
 
   backface-visibility: hidden;
-  /* contain: strict; TODO: breaks layout since Chrome 80*/
+  contain: strict;
 
   height: 100vh;
   position: sticky;
@@ -44,7 +44,7 @@ const StyledStickySidebar = styled.div<{ open?: boolean }>`
     position: fixed;
     z-index: 20;
     width: 100%;
-    background: ${({ theme }) => theme.menu.backgroundColor};
+    background: #ffffff;
     display: ${props => (props.open ? 'flex' : 'none')};
   `};
 
@@ -87,7 +87,7 @@ export class StickyResponsiveSidebar extends React.Component<
 > {
   static contextType = OptionsContext;
   context!: React.ContextType<typeof OptionsContext>;
-  state: StickySidebarState = { offsetTop: '0px' };
+  state: StickySidebarState = {};
 
   stickyElement: Element;
 
@@ -122,7 +122,7 @@ export class StickyResponsiveSidebar extends React.Component<
   render() {
     const open = this.props.menu.sideBarOpened;
 
-    const top = this.state.offsetTop;
+    const top = this.state.offsetTop || this.getScrollYOffset(this.context);
 
     return (
       <>

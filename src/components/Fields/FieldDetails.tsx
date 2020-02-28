@@ -27,19 +27,16 @@ export class FieldDetails extends React.PureComponent<FieldProps> {
   static contextType = OptionsContext;
   render() {
     const { showExamples, field, renderDiscriminatorSwitch } = this.props;
-    const { enumSkipQuotes, hideSchemaTitles } = this.context;
+    const { enumSkipQuotes } = this.context;
 
     const { schema, description, example, deprecated } = field;
-
-    const rawDefault = !!enumSkipQuotes || field.in === 'header'; // having quotes around header field default values is confusing and inappropriate
 
     let exampleField: JSX.Element | null = null;
 
     if (showExamples && example !== undefined) {
       const label = l('example') + ':';
       if (field.in && (field.style || field.serializationMime)) {
-        // decode for better readability in examples: see https://github.com/Redocly/redoc/issues/1138
-        const serializedValue = decodeURIComponent(serializeParameterValue(field, example));
+        const serializedValue = serializeParameterValue(field, example);
         exampleField = <FieldDetail label={label} value={serializedValue} raw={true} />;
       } else {
         exampleField = <FieldDetail label={label} value={example} />;
@@ -59,10 +56,10 @@ export class FieldDetails extends React.PureComponent<FieldProps> {
               &gt;{' '}
             </TypeFormat>
           )}
-          {schema.title && !hideSchemaTitles && <TypeTitle> ({schema.title}) </TypeTitle>}
+          {schema.title && <TypeTitle> ({schema.title}) </TypeTitle>}
           <ConstraintsView constraints={schema.constraints} />
           {schema.nullable && <NullableLabel> {l('nullable')} </NullableLabel>}
-          {schema.pattern && <PatternLabel> {schema.pattern} </PatternLabel>}
+          {schema.pattern && <PatternLabel>{schema.pattern}</PatternLabel>}
           {schema.isCircular && <RecursiveLabel> {l('recursive')} </RecursiveLabel>}
         </div>
         {deprecated && (
@@ -70,7 +67,7 @@ export class FieldDetails extends React.PureComponent<FieldProps> {
             <Badge type="warning"> {l('deprecated')} </Badge>
           </div>
         )}
-        <FieldDetail raw={rawDefault} label={l('default') + ':'} value={schema.default} />
+        <FieldDetail raw={enumSkipQuotes} label={l('default') + ':'} value={schema.default} />
         {!renderDiscriminatorSwitch && <EnumValues type={schema.type} values={schema.enum} />}{' '}
         {exampleField}
         {<Extensions extensions={{ ...field.extensions, ...schema.extensions }} />}
