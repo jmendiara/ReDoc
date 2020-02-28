@@ -75,7 +75,6 @@ export class SchemaModel {
     this.pointer = schemaOrRef.$ref || pointer || '';
     this.rawSchema = parser.deref(schemaOrRef);
     this.schema = parser.mergeAllOf(this.rawSchema, this.pointer, isChild);
-
     this.init(parser, isChild);
 
     parser.exitRef(schemaOrRef);
@@ -126,13 +125,6 @@ export class SchemaModel {
     if (!isChild && getDiscriminator(schema) !== undefined) {
       this.initDiscriminator(schema, parser);
       return;
-    } else if (
-      isChild &&
-      Array.isArray(schema.oneOf) &&
-      schema.oneOf.find(s => s.$ref === this.pointer)
-    ) {
-      // we hit allOf of the schema with the parent discriminator
-      delete schema.oneOf;
     }
 
     if (schema.oneOf !== undefined) {
@@ -224,10 +216,7 @@ export class SchemaModel {
   ) {
     const discriminator = getDiscriminator(schema)!;
     this.discriminatorProp = discriminator.propertyName;
-    const implicitInversedMapping = parser.findDerived([
-      ...(schema.parentRefs || []),
-      this.pointer,
-    ]);
+    const derived = parser.findDerived([...(schema.parentRefs || []), this.pointer]);
 
     if (schema.oneOf) {
       for (const variant of schema.oneOf) {
@@ -235,41 +224,19 @@ export class SchemaModel {
           continue;
         }
         const name = JsonPointer.baseName(variant.$ref);
-        implicitInversedMapping[variant.$ref] = name;
+        derived[variant.$ref] = name;
       }
     }
 
     const mapping = discriminator.mapping || {};
-    const explicitInversedMapping = {};
     for (const name in mapping) {
-      const $ref = mapping[name];
-
-      if (Array.isArray(explicitInversedMapping[$ref])) {
-        explicitInversedMapping[$ref].push(name);
-      } else {
-        // overrides implicit mapping here
-        explicitInversedMapping[$ref] = [name];
-      }
+      derived[mapping[name]] = name;
     }
 
-    const inversedMapping = { ...implicitInversedMapping, ...explicitInversedMapping };
-
-    const refs: Array<{ $ref; name }> = [];
-
-    for (const $ref of Object.keys(inversedMapping)) {
-      const names = inversedMapping[$ref];
-      if (Array.isArray(names)) {
-        for (const name of names) {
-          refs.push({ $ref, name });
-        }
-      } else {
-        refs.push({ $ref, name: names });
-      }
-    }
-
-    this.oneOf = refs.map(({ $ref, name }) => {
-      const innerSchema = new SchemaModel(parser, parser.byRef($ref)!, $ref, this.options, true);
-      innerSchema.title = name;
+    const refs = Object.keys(derived);
+    this.oneOf = refs.map(ref => {
+      const innerSchema = new SchemaModel(parser, parser.byRef(ref)!, ref, this.options, true);
+      innerSchema.title = derived[ref];
       return innerSchema;
     });
   }
@@ -284,7 +251,7 @@ function buildFields(
   const props = schema.properties || {};
   const additionalProps = schema.additionalProperties;
   const defaults = schema.default || {};
-  let fields = Object.keys(props || []).map(fieldName => {
+  const fields = Object.keys(props || []).map(fieldName => {
     let field = props[fieldName];
 
     if (!field) {
@@ -313,11 +280,11 @@ function buildFields(
   });
 
   if (options.sortPropsAlphabetically) {
-    fields = sortByField(fields, 'name');
+    sortByField(fields, 'name');
   }
   if (options.requiredPropsFirst) {
     // if not sort alphabetically sort in the order from required keyword
-    fields = sortByRequired(fields, !options.sortPropsAlphabetically ? schema.required : undefined);
+    sortByRequired(fields, !options.sortPropsAlphabetically ? schema.required : undefined);
   }
 
   if (typeof additionalProps === 'object' || additionalProps === true) {

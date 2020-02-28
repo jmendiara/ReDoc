@@ -1,16 +1,14 @@
 import { SECTION_ATTR } from '../services/MenuStore';
 import styled, { media } from '../styled-components';
 
-export const MiddlePanel = styled.div<{ compact?: boolean }>`
+export const MiddlePanel = styled.div`
   width: calc(100% - ${props => props.theme.rightPanel.width});
   padding: 0 ${props => props.theme.spacing.sectionHorizontal}px;
 
-  ${({ compact, theme }) =>
-    media.lessThan('medium', true)`
+  ${media.lessThan('medium', true)`
     width: 100%;
-    padding: ${`${compact ? 0 : theme.spacing.sectionVertical}px ${
-      theme.spacing.sectionHorizontal
-    }px`};
+    padding: ${props =>
+      `${props.theme.spacing.sectionVertical}px ${props.theme.spacing.sectionHorizontal}px`};
   `};
 `;
 

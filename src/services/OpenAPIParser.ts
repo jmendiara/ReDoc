@@ -4,11 +4,7 @@ import { OpenAPIRef, OpenAPISchema, OpenAPISpec, Referenced } from '../types';
 
 import { appendToMdHeading, IS_BROWSER } from '../utils/';
 import { JsonPointer } from '../utils/JsonPointer';
-import {
-  isNamedDefinition,
-  SECURITY_DEFINITIONS_COMPONENT_NAME,
-  SECURITY_DEFINITIONS_JSX_NAME,
-} from '../utils/openapi';
+import { isNamedDefinition, SECURITY_DEFINITIONS_COMPONENT_NAME } from '../utils/openapi';
 import { buildComponentComment, MarkdownRenderer } from './MarkdownRenderer';
 import { RedocNormalizedOptions } from './RedocNormalizedOptions';
 
@@ -44,7 +40,6 @@ class RefCounter {
 export class OpenAPIParser {
   specUrl?: string;
   spec: OpenAPISpec;
-  mergeRefs: Set<string>;
 
   private _refCounter: RefCounter = new RefCounter();
 
@@ -57,8 +52,6 @@ export class OpenAPIParser {
     this.preprocess(spec);
 
     this.spec = spec;
-
-    this.mergeRefs = new Set();
 
     const href = IS_BROWSER ? window.location.href : '';
     if (typeof specUrl === 'string') {
@@ -81,10 +74,7 @@ export class OpenAPIParser {
     ) {
       // Automatically inject Authentication section with SecurityDefinitions component
       const description = spec.info.description || '';
-      if (
-        !MarkdownRenderer.containsComponent(description, SECURITY_DEFINITIONS_COMPONENT_NAME) &&
-        !MarkdownRenderer.containsComponent(description, SECURITY_DEFINITIONS_JSX_NAME)
-      ) {
+      if (!MarkdownRenderer.containsComponent(description, SECURITY_DEFINITIONS_COMPONENT_NAME)) {
         const comment = buildComponentComment(SECURITY_DEFINITIONS_COMPONENT_NAME);
         spec.info.description = appendToMdHeading(description, 'Authentication', comment);
       }
@@ -112,7 +102,7 @@ export class OpenAPIParser {
   };
 
   /**
-   * checks if the object is OpenAPI reference (contains $ref property)
+   * checks if the objectt is OpenAPI reference (containts $ref property)
    */
   isRef(obj: any): obj is OpenAPIRef {
     if (!obj) {
@@ -122,7 +112,7 @@ export class OpenAPIParser {
   }
 
   /**
-   * resets visited endpoints. should be run after
+   * resets visited enpoints. should be run after
    */
   resetVisited() {
     if (process.env.NODE_ENV !== 'production') {
@@ -146,7 +136,7 @@ export class OpenAPIParser {
   /**
    * Resolve given reference object or return as is if it is not a reference
    * @param obj object to dereference
-   * @param forceCircular whether to dereference even if it is circular ref
+   * @param forceCircular whether to dereference even if it is cirular ref
    */
   deref<T extends object>(obj: OpenAPIRef | T, forceCircular: boolean = false): T {
     if (this.isRef(obj)) {
@@ -177,21 +167,16 @@ export class OpenAPIParser {
   }
 
   /**
-   * Merge allOf constraints.
+   * Merge allOf contsraints.
    * @param schema schema with allOF
    * @param $ref pointer of the schema
-   * @param forceCircular whether to dereference children even if it is a circular ref
+   * @param forceCircular whether to dereference children even if it is a cirular ref
    */
   mergeAllOf(
     schema: OpenAPISchema,
     $ref?: string,
     forceCircular: boolean = false,
-    used$Refs = new Set<string>(),
   ): MergedOpenAPISchema {
-    if ($ref) {
-      used$Refs.add($ref);
-    }
-
     schema = this.hoistOneOfs(schema);
 
     if (schema.allOf === undefined) {
@@ -213,25 +198,16 @@ export class OpenAPIParser {
       receiver.items = { ...receiver.items };
     }
 
-    const allOfSchemas = schema.allOf
-      .map(subSchema => {
-        if (subSchema && subSchema.$ref && used$Refs.has(subSchema.$ref)) {
-          return undefined;
-        }
-
-        const resolved = this.deref(subSchema, forceCircular);
-        const subRef = subSchema.$ref || undefined;
-        const subMerged = this.mergeAllOf(resolved, subRef, forceCircular, used$Refs);
-        receiver.parentRefs!.push(...(subMerged.parentRefs || []));
-        return {
-          $ref: subRef,
-          schema: subMerged,
-        };
-      })
-      .filter(child => child !== undefined) as Array<{
-      $ref: string | undefined;
-      schema: MergedOpenAPISchema;
-    }>;
+    const allOfSchemas = schema.allOf.map(subSchema => {
+      const resolved = this.deref(subSchema, forceCircular);
+      const subRef = subSchema.$ref || undefined;
+      const subMerged = this.mergeAllOf(resolved, subRef, forceCircular);
+      receiver.parentRefs!.push(...(subMerged.parentRefs || []));
+      return {
+        $ref: subRef,
+        schema: subMerged,
+      };
+    });
 
     for (const { $ref: subSchemaRef, schema: subSchema } of allOfSchemas) {
       if (
@@ -275,13 +251,13 @@ export class OpenAPIParser {
       }
 
       // merge rest of constraints
-      // TODO: do more intelligent merge
+      // TODO: do more intelegent merge
       receiver = { ...subSchema, ...receiver };
 
       if (subSchemaRef) {
         receiver.parentRefs!.push(subSchemaRef);
         if (receiver.title === undefined && isNamedDefinition(subSchemaRef)) {
-          // this is not so correct behaviour. commented out for now
+          // this is not so correct behaviour. comented out for now
           // ref: https://github.com/Redocly/redoc/issues/601
           // receiver.title = JsonPointer.baseName(subSchemaRef);
         }
@@ -296,8 +272,8 @@ export class OpenAPIParser {
    * returns map of definition pointer to definition name
    * @param $refs array of references to find derived from
    */
-  findDerived($refs: string[]): Dict<string[] | string> {
-    const res: Dict<string[]> = {};
+  findDerived($refs: string[]): Dict<string> {
+    const res: Dict<string> = {};
     const schemas = (this.spec.components && this.spec.components.schemas) || {};
     for (const defName in schemas) {
       const def = this.deref(schemas[defName]);
@@ -305,7 +281,7 @@ export class OpenAPIParser {
         def.allOf !== undefined &&
         def.allOf.find(obj => obj.$ref !== undefined && $refs.indexOf(obj.$ref) > -1)
       ) {
-        res['#/components/schemas/' + defName] = [def['x-discriminator-value'] || defName];
+        res['#/components/schemas/' + defName] = def['x-discriminator-value'] || defName;
       }
     }
     return res;
